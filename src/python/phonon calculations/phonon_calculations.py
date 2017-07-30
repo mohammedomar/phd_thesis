@@ -18,16 +18,17 @@ import pickle,sys,os
 import plot_bandstructure
 
 
-def phonon_bandstructure(nPh = 3,E_cutoff = 100, fermi_width = 0.026):
+def phonon_bandstructure(nPh = 3,nSamples = 3,E_cutoff = 100, fermi_width = 0.026):
     """
-    Calculates and phonon bandstructure of graphene in accordance ot the input parameters using the RPBE method. The results are saved as PNG and MAT files as well using the suffix '_phonon_nPhxnPh_E_cutoff'. The calculations are performed using a 2-atom unit cell. The data are saved in the directories 'txt','mat','calc' and 'fig' according to their types. The program will create these directories if not available and will overwrite files in them with the same output file names. All calculations are performed while in the directory 'calc' inside a folder using the aforementioned file '_phonon_nPhxnPh_E_cutoff'.
+    Calculates and phonon bandstructure of graphene in accordance ot the input parameters using the RPBE method. The results are saved as PNG and MAT files as well using the suffix '_phonon_nPhxnPh_E_cutoff'. The calculations are performed using a 2-atom unit cell. The data are saved in the directories 'txt','mat','calc' and 'fig' according to their types. The program will create these directories if not available and will overwrite files in them with the same output file names. All calculations are performed while in the directory 'calc' inside a folder using the aforementioned file '_phonon_nPhxnPh_cell_nSamplesxnSamples_pts_E_cutoff'.
     :nPh (integer, optional, default = 3) : Length of super-cell square side used in calculations.
+    :nSamples (integer, optional, default = 3): Number of sampling points in the k-space inside the bZ
     :E_cutoff (scalar, optional, default = 100) : Cut-off of PW energy (eV) used in the calculationsinitial calculations.
     :fermi_width (scalar, optional, default = 0.026) : Fermi-Dirac Distribution broadening (kT) in eV.
     """
     ##### Start of Code #####
 
-    fileID = '_phonon_'+str(nPh)+'x'+str(nPh)+'_'+str(E_cutoff)
+    fileID = '_phonon_'+str(nPh)+'x'+str(nPh)+'_cell_'+str(nSamples)+'x'+str(nSamples)+'_pts_'+str(E_cutoff)
     dataID = 'bandstructure'
     
     makeDirs = ['txt','mat','fig','calc']
@@ -79,8 +80,9 @@ def phonon_bandstructure(nPh = 3,E_cutoff = 100, fermi_width = 0.026):
     
     #Calculate Phonon Data
     log_path = os.path.join(txt_Dir,'gpaw_calc'+dataID+fileID+'_log.txt')
+    kpts_calc = {'size':(nSamples,nSamples,1),'gamma':True}
     kpts_ph = {'size':(nPh,nPh,1),'gamma':True}
-    ph_calc = GPAW(mode=PW(E_cutoff),basis='dzp',xc='RPBE',kpts = kpts_ph,occupations = FermiDirac(fermi_width),symmetry = 'off',txt = log_path)
+    ph_calc = GPAW(mode=PW(E_cutoff),basis='dzp',xc='RPBE',kpts = kpts_calc,occupations = FermiDirac(fermi_width),symmetry = 'off',txt = log_path)
     ph = Phonons(cell_atoms,ph_calc,supercell=(nPh,nPh,1))
     ph.run()
     ph.read(acoustic=True)
