@@ -174,7 +174,7 @@ def read_dcOp(dcOpFile='../output/input.raw/dcOp.dc',plotData = True,saveMatlab=
     if saveMatlab:
         #Create the variable dictionary
         varsDict = {'R1_idx':R1_idx,'R1':R1,'R2_idx':R2_idx,'R2':R2,'Rc_idx':Rc_idx,'Rc':Rc} #Current
-        varsDict.update({'V1_idx':V1_idx,'V1':V1,'V2_idx':V2_idx}) #Voltages
+        varsDict.update({'V1_idx':V1_idx,'V1':V1,'V2_idx':V2_idx,'V2':V2}) #Voltages
         savemat(matPath,varsDict)
    
     if verbose_err:
